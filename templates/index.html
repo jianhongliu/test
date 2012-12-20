@@ -1,0 +1,33 @@
+$def with (counts)
+<?xml version="1.0" encoding="iso-8859-15"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "">
+<html xmlns="">
+<HTML>
+<style>
+.cell{border:solid 1px #666;}
+
+</style>
+<head>
+
+<META HTTP-EQUIV="Refresh" CONTENT="60">
+
+<table width="80%" cellspacing="0" cellpadding="10" align="center" class="cell">
+  <tr bgcolor="#CCCCCC">
+    <td width="30%" height="30" align="center" valign="middle" class="cell">Title</td>
+    <td width="70%" height="30" align="center" valign="middle" class="cell">Description</td>
+    <td width="70%" height="30" align="center" valign="middle" class="cell">Result</td>
+    <td width="70%" height="30" align="center" valign="middle" class="cell">Status</td>
+  </tr>
+  <tr><td width="100%" colspan="4" height="5px" class="cell">&nbsp;</td></tr>
+$for key in counts.keys():
+    <tr>
+    <td width="30%" height="30" align="center" valign="middle" class="cell" color="blue"><font color=blue>$key</font></td>
+    <td width="30%" height="30" align="center" valign="middle" class="cell" color="blue">$key</td>
+    $if counts[key] > 0:
+        <td width="30%" height="30" align="center" valign="middle" class="cell"><font color=green>$counts[key]</font></td>
+        <td width="30%" height="30" align="center" valign="middle" class="cell" bgcolor="green">PASSED</td>
+    $else:
+        <td width="30%" height="30" align="center" valign="middle" class="cell"><font color=red>$counts[key]</font></td>
+        <td width="30%" height="30" align="center" valign="middle" class="cell" bgcolor="red">FAILED</td>
+    </tr>
+</table>
