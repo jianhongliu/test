@@ -42,28 +42,33 @@ class index:
     def GET(self):
         counts = {}
         message = ""
-#        emailflag = web.cookies().emailflag
         for i in range(1,17):
-            conn = HTTPConnection(eval('site'+str(i))[0],80,True,20)
+            counts.update({str(eval('site'+str(i))[3]):0})
+#        emailflag = web.cookies().emailflag
+        for j in range(1,3):
+            for i in range(1,17):
+                conn = HTTPConnection(eval('site'+str(i))[0],80,True,20)
 #conn = HTTPConnection('www.b5m.com',80,True,10)
-            try:
-                conn.request('GET',eval('site'+str(i))[1])
-                httpres = conn.getresponse()
-                data = httpres.read()
-                pr = re.findall(eval('site'+str(i))[2],data)
-                if  pr:
-                    counts.update({str(eval('site'+str(i))[3]):pr[0]})
-                else:
-                    counts.update({str(eval('site'+str(i))[3]):0})
-            except:
-                counts.update({str(eval('site'+str(i))[3]):0})
-                continue
-            if counts[str(eval('site'+str(i))[3])] == 0:
-                message = message + str(eval('site'+str(i))[3]) + " page is FAILED!"
+                try:
+                    conn.request('GET',eval('site'+str(i))[1])
+                    httpres = conn.getresponse()
+                    data = httpres.read()
+                    pr = re.findall(eval('site'+str(i))[2],data)
+                    if  pr:
+                        value = max(counts[str(eval('site'+str(i))[3])], pr[0]) 
+                    else:
+                        value = max(counts[str(eval('site'+str(i))[3])], 0)
+                    counts.update({str(eval('site'+str(i))[3]):value})
+                except:
+                    value = max(counts[str(eval('site'+str(i))[3])], 0)
+                    counts.update({str(eval('site'+str(i))[3]):value})
+                    continue
+                if counts[str(eval('site'+str(i))[3])] == 0:
+                    message = message + str(eval('site'+str(i))[3]) + " page is FAILED!"
               # web.sendmail('jianhong.liu@b5m.com', 'jianhong.liu@b5m.com', subject, message) 
-            time.sleep(0)
+                time.sleep(0)
         if  message:
-#emailflag 防止邮件重发，出问题时，设置为1，则下次检测再出问题，不会发送email，待问题修复后设置为0，下次出问题就可继续发邮件
+#emailflag 防止邮件重发，出问题时，设置为1，则下次检测再出问题，不会发送email，待问题修复后设置为0，下次出问题就可继续发邮件(未实现)
             subject = "搜索or导航 Page Failed"
             web.sendmail('jianhong.liu@b5m.com', 'jianhong.liu@b5m.com', subject, message) 
             #emailflag = 1
