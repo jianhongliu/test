@@ -4,6 +4,12 @@ import web
 import re, time
 from httplib import *
 
+web.config.smtp_server = 'smtp.gmail.com'
+web.config.smtp_port = 587
+web.config.smtp_username = 'xxx@gmail.com'
+web.config.smtp_password = '123456'
+web.config.smtp_starttls = True
+
 keyword = 'iphone'
 
 site1 = ('www.b5m.com', '/search/s/______________' + keyword + '.html', '找到相关商品(\d+)件', '购物')
@@ -23,7 +29,6 @@ site14 = ('www.b5m.com', '/album/idx/__1.html', '<span class="likeico"></span>\(
 site15 = ('www.b5m.com', '/brand/', '<em class="likeico"></em>(\d+)</p>', '导航品牌')
 site16 = ('sejie.b5m.com', '/sejie/', 'title="喜欢">(\d+)</span>', '导航色界')
 
-
 urls = (
     '/', 'index',
 )
@@ -35,39 +40,23 @@ class index:
         counts = {}
         for i in range(1,17):
             conn = HTTPConnection(eval('site'+str(i))[0],80,True,20)
-#conn = HTTPConnection('www.b5m.com',80,True,10)
             try:
                 conn.request('GET',eval('site'+str(i))[1])
-            except:
-                counts.update({str(eval('site'+str(i))[3]):0})
-                continue
-#conn.request('GET','/search/s/______________b.html')
-#httpres = conn.getresponse()
-            try:
                 httpres = conn.getresponse()
+                data = httpres.read()
+                pr = re.findall(eval('site'+str(i))[2],data)
+                if  pr:
+                    counts.update({str(eval('site'+str(i))[3]):pr[0]})
+                else:
+                    counts.update({str(eval('site'+str(i))[3]):0})
             except:
                 counts.update({str(eval('site'+str(i))[3]):0})
                 continue
-#            fp = open(str(i), 'w')
-#            fp.write(httpres.read())
-#            fp.close()
-            try:
-                data=httpres.read()
-            except:
-                counts.update({str(eval('site'+str(i))[3]):0})
-                continue
-            pr = re.findall(eval('site'+str(i))[2],data)
-            if  pr:
-                counts.update({str(eval('site'+str(i))[3]):pr[0]})
-            else:
-                counts.update({str(eval('site'+str(i))[3]):0})
-#            statuses.update(httpres.status)
-#            print 'site'+str(i), ':', httpres.status
-#            print 'site'+str(i), ':', httpres.reason
-#            fp = open('site'+str(i)+'.html', 'w')
-#            fp.write(httpres.read())
-#            fp.close()
-            time.sleep(1)
+            if counts[str(eval('site'+str(i))[3])] == 0:
+               subject = str(eval('site'+str(i))[3]) + " page is FAILED!"
+               message = str(eval('site'+str(i))[3]) + " page is FAILED!"
+               web.sendmail('xxx@gmail.com', 'toyyy@gmail.com', subject, message) 
+            time.sleep(2)
         return render.index(counts) 
 
 if __name__ == "__main__":
