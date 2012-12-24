@@ -9,7 +9,7 @@ $def with (counts)
 </style>
 <head>
 
-<META HTTP-EQUIV="Refresh" CONTENT="300"> 
+<META HTTP-EQUIV="Refresh" CONTENT="300;url=$counts['emailflag'][1]/$counts['emailflag'][0]"> 
 
 <table width="80%" cellspacing="0" cellpadding="10" align="center" class="cell">
   <tr bgcolor="#CCCCCC">
@@ -22,13 +22,13 @@ $def with (counts)
 $for key in counts.keys():
     $if key != 'emailflag':
         <tr>
-        <td width="30%" height="30" align="center" valign="middle" class="cell" color="blue"><font color=blue>$key</font></td>
-        <td width="30%" height="30" align="center" valign="middle" class="cell" color="blue">$key</td>
-        $if counts[key] > 0:
-            <td width="30%" height="30" align="center" valign="middle" class="cell"><font color=green>$counts[key]</font></td>
+        <td width="30%" height="30" align="center" valign="middle" class="cell" color="blue"><font color=blue><a href="http://$counts[key][1]">$key</font></a></td>
+        <td width="30%" height="30" align="center" valign="middle" class="cell" color="blue"><a href="http://$counts[key][1]">http://$counts[key][1]</a></td>
+        $if counts[key][0] > 0:
+            <td width="30%" height="30" align="center" valign="middle" class="cell"><font color=green>$counts[key][0]</font></td>
             <td width="30%" height="30" align="center" valign="middle" class="cell" bgcolor="green">PASSED</td>
         $else:
-            <td width="30%" height="30" align="center" valign="middle" class="cell"><font color=red>$counts[key]</font></td>
+            <td width="30%" height="30" align="center" valign="middle" class="cell"><font color=red>$counts[key][0]</font></td>
             <td width="30%" height="30" align="center" valign="middle" class="cell" bgcolor="red">FAILED</td>
         </tr>
 </table>

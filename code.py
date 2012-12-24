@@ -4,8 +4,6 @@ import web
 import re, time
 from httplib import *
 
-app = web.application(urls, globals())
-
 web.config.smtp_server = 'smtp.gmail.com'
 web.config.smtp_port = 587
 web.config.smtp_username = 'jianhong.liu@b5m.com'
@@ -14,67 +12,72 @@ web.config.smtp_starttls = True
 
 keyword = 'iphone'
 
-site1 = ('www.b5m.com', '/search/s/______________' + keyword + '.html', '找到相关商品(\d+)件', '购物搜索')
-site2 = ('sejie.b5m.com', '/sejie/s/____' + keyword + '.html', 'title="喜欢">(\d+)</span>', '色界搜索')
-site3 = ('www.b5m.com', '/guang/s/_____' + keyword + '.html', '逛街\((\d+)\)', '逛街搜索')
-site4 = ('www.b5m.com', '/o/tuan/s/' + keyword + '_________', '共有(\d+)条符合条件的结果', '团购搜索')
-site5 = ('www.b5m.com', '/o/ticket/s/' + '2012' + '_______', '找到<strong>(\d+)</strong>个相关演出', '搜票搜索')
-site6 = ('www.b5m.com', '/o/shj/s/' + 'a' + '_____', '正品保障<b>\((\d+)\)</b>', '商家搜索')
-site7 = ('www.b5m.com', '/clt/s/___' + keyword + '.html', '专题\((\d+)\)', '专题搜索')
-site8 = ('www.b5m.com', '/brandSearch_' + 'apple' + '_.html', '品牌\((\d+)\)', '品牌搜索')
-site9 = ('www.b5m.com', '/', '(\d+)天以前', '首页')
-site10 = ('www.b5m.com', '/guang', '￥(\d+)', '导航逛街')
-site11 = ('www.b5m.com', '/o/tuan', '<b>原价</b><span>¥</span><span><del>(\d+)', '导航团购')
-site12 = ('www.b5m.com', '/o/ticket', '<strong>演唱会</strong>\((\d+)\)</a></li>', '导航演出票务')
-site13 = ('www.b5m.com', '/fan', '返(\d+)%', '导航网购优惠')
-site14 = ('www.b5m.com', '/album/idx/__1.html', '<span class="likeico"></span>\((\d+)\)</span>', '导航专题')
-site15 = ('www.b5m.com', '/brand/', '<em class="likeico"></em>(\d+)</p>', '导航品牌')
-site16 = ('sejie.b5m.com', '/sejie/', 'title="喜欢">(\d+)</span>', '导航色界')
+site = {} 
+
+site[1] = ('www.b5m.com', '/search/s/______________' + keyword + '.html', '找到相关商品(\d+)件', '购物搜索')
+site[2] = ('sejie.b5m.com', '/sejie/s/____' + keyword + '.html', 'title="喜欢">(\d+)</span>', '色界搜索')
+site[3] = ('www.b5m.com', '/guang/s/_____' + keyword + '.html', '逛街\((\d+)\)', '逛街搜索')
+site[4] = ('www.b5m.com', '/o/tuan/s/' + keyword + '_________', '共有(\d+)条符合条件的结果', '团购搜索')
+site[5] = ('www.b5m.com', '/o/ticket/s/' + '2012' + '_______', '找到<strong>(\d+)</strong>个相关演出', '搜票搜索')
+site[6] = ('www.b5m.com', '/o/shj/s/' + 'a' + '_____', '正品保障<b>\((\d+)\)</b>', '商家搜索')
+site[7] = ('www.b5m.com', '/clt/s/___' + keyword + '.html', '专题\((\d+)\)', '专题搜索')
+site[8] = ('www.b5m.com', '/brandSearch_' + 'apple' + '_.html', '品牌\((\d+)\)', '品牌搜索')
+site[9] = ('www.b5m.com', '/', '(\d+)天以前', '首页')
+site[10] = ('www.b5m.com', '/guang', '￥(\d+)', '导航逛街')
+site[11] = ('www.b5m.com', '/o/tuan', '<b>原价</b><span>¥</span><span><del>(\d+)', '导航团购')
+site[12] = ('www.b5m.com', '/o/ticket', '<strong>演唱会</strong>\((\d+)\)</a></li>', '导航演出票务')
+site[13] = ('www.b5m.com', '/fan', '返(\d+)%', '导航网购优惠')
+site[14] = ('www.b5m.com', '/album/idx/__1.html', '<span class="likeico"></span>\((\d+)\)</span>', '导航专题')
+site[15] = ('www.b5m.com', '/brand/', '<em class="likeico"></em>(\d+)</p>', '导航品牌')
+site[16] = ('sejie.b5m.com', '/sejie/', 'title="喜欢">(\d+)</span>', '导航色界')
 
 
 urls = (
-    '/', 'index',
+    '/(.*)/', 'index',
 )
 
 render = web.template.render('templates/')
+app = web.application(urls, globals())
 
 class index:
-    def GET(self):
+    def GET(self, emailflag):
         counts = {}
         message = ""
+        emailflag = int(emailflag)
         for i in range(1,17):
-            counts.update({str(eval('site'+str(i))[3]):0})
-#        emailflag = web.cookies().emailflag
-        for j in range(1,3):
+            counts[site[i][3]] = [0, site[i][0]+site[i][1]] 
+        for j in range(1,4):
             for i in range(1,17):
-                conn = HTTPConnection(eval('site'+str(i))[0],80,True,20)
-#conn = HTTPConnection('www.b5m.com',80,True,10)
+                conn = HTTPConnection(site[i][0],80,True,20)
                 try:
-                    conn.request('GET',eval('site'+str(i))[1])
+                    conn.request('GET',site[i][1])
                     httpres = conn.getresponse()
                     data = httpres.read()
-                    pr = re.findall(eval('site'+str(i))[2],data)
+                    pr = re.findall(site[i][2],data)
                     if  pr:
-                        value = max(counts[str(eval('site'+str(i))[3])], pr[0]) 
+                        value = counts[site[i][3]][0] +  int(pr[0])
                     else:
-                        value = max(counts[str(eval('site'+str(i))[3])], 0)
-                    counts.update({str(eval('site'+str(i))[3]):value})
+                        value = counts[site[i][3]][0] + 0
+                    counts[site[i][3]][0] = value
                 except:
-                    value = max(counts[str(eval('site'+str(i))[3])], 0)
-                    counts.update({str(eval('site'+str(i))[3]):value})
+                    value = counts[site[i][3]][0] + 0
+                    counts[site[i][3]][0] = value
                     continue
-                if counts[str(eval('site'+str(i))[3])] == 0:
-                    message = message + str(eval('site'+str(i))[3]) + " page is FAILED!"
-              # web.sendmail('jianhong.liu@b5m.com', 'jianhong.liu@b5m.com', subject, message) 
+                if counts[site[i][3]][0] == 0:
+                    message = message + site[i][3] + " page is FAILED!"
                 time.sleep(0)
-        if  message:
-#emailflag 防止邮件重发，出问题时，设置为1，则下次检测再出问题，不会发送email，待问题修复后设置为0，下次出问题就可继续发邮件(未实现)
+        for i in range(1,17):
+            counts[site[i][3]][0] = counts[site[i][3]][0]/3
+            if counts[site[i][3]][0] == 0:
+                message = message + site[i][3] + " page is FAILED!"
+        if  message and emailflag==0:
+#emailflag 防止邮件重发，出问题时，设置为1，则下次检测再出问题，不会发送email，待问题修复后设置为0，下次出问题就可继续发邮件
             subject = "搜索or导航 Page Failed"
             web.sendmail('jianhong.liu@b5m.com', 'jianhong.liu@b5m.com', subject, message) 
-            #emailflag = 1
-        #else:
-        #    emailflag = 0
-        #web.setcookie('emailflag', emailflag)
+            emailflag = 1
+        elif not message:
+            emailflag = 0
+        counts['emailflag'] = [emailflag, web.ctx.homedomain]
         return render.index(counts) 
 
 if __name__ == "__main__":
