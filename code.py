@@ -33,7 +33,7 @@ site[16] = ('sejie.b5m.com', '/sejie/', 'title="喜欢">(\d+)</span>', '导航�
 
 
 urls = (
-    '/(.*)/', 'index',
+    '/(.*)', 'index',
 )
 
 render = web.template.render('templates/')
