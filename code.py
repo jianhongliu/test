@@ -6,8 +6,8 @@ from httplib import *
 
 web.config.smtp_server = 'smtp.gmail.com'
 web.config.smtp_port = 587
-web.config.smtp_username = 'jianhong.liu@b5m.com'
-web.config.smtp_password = 'Lucas1234'
+web.config.smtp_username = 'xxx@xxx.com'
+web.config.smtp_password = 'xxxxxxxx'
 web.config.smtp_starttls = True
 
 keyword = 'iphone'
@@ -73,7 +73,7 @@ class index:
         if  message and emailflag==0:
 #emailflag 防止邮件重发，出问题时，设置为1，则下次检测再出问题，不会发送email，待问题修复后设置为0，下次出问题就可继续发邮件
             subject = "搜索or导航 Page Failed"
-            web.sendmail('jianhong.liu@b5m.com', 'jianhong.liu@b5m.com', subject, message) 
+            web.sendmail('xxx@xxx.com', 'yyy@xxx.com', subject, message) 
             emailflag = 1
         elif not message:
             emailflag = 0
